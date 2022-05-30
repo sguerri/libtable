@@ -1,0 +1,14 @@
+
+[ ] Readme
+[ ] Code documentation
+[ ] TableEdit : input new value
+[ ] TableSelect : add keyboard ID / IID input
+[ ] See versioneer
+[ ] BUG: when selct, inline and erase_when_done, cursor stays hidden after close
+
+Archive:
+    [x] Mode edit @done(22-05-30 14:19)
+    [x] Review all code TODO @done(22-05-30 13:34)
+    [x] Mode prompt @done(22-05-30 11:19)
+    [x] Mode display @done(22-05-30 09:46)
+    [x] Mode select @done(22-05-30 09:46)
