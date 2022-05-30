@@ -1,0 +1,7 @@
+**/__pycache__
+**/.pytest_cache
+poetry.lock
+bump-version.sh
+.vscode/
+dist/
+=1.0.0
