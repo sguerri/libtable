@@ -16,6 +16,9 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from prompt_toolkit.layout.controls import FormattedTextControl
+from prompt_toolkit.formatted_text import to_formatted_text
+from prompt_toolkit.formatted_text import HTML
+from prompt_toolkit.formatted_text import FormattedText
 
 
 class TableControl(FormattedTextControl):
@@ -90,34 +93,41 @@ class TableControl(FormattedTextControl):
         row_index = 1
         even = True
         for row in self.table["rows"]:
-            line = ""
+            formatted_line = FormattedText([])
             if self.has_auto:
-                line += str(row_index).rjust(self.rows_count_width)
-                line += "".ljust(self.span)
+                formatted_line.append(('', str(row_index).rjust(self.rows_count_width)))
+                formatted_line.append(('', "".ljust(self.span)))
             index = 0
-            for item in row:
+            for cell in row:
                 if index >= self.column_count:
                     break
-                content = str(item)[0:self.column_widths[index]] if item is not None else ""
-                if self.column_align[index]:
-                    content = content.rjust(self.column_widths[index])
-                else:
-                    content = content.ljust(self.column_widths[index])
-                line += content
+                available_width = self.column_widths[index]
+                cell_items = to_formatted_text(HTML(cell)) if cell is not None else [('', '')]
+                temp_items = []
+                for cell_item in cell_items:
+                    content = cell_item[1][0:available_width]
+                    available_width -= len(content)
+                    temp_items.append((cell_item[0], content))
+                if available_width > 0 and self.column_align[index]:
+                    formatted_line.append(('', "".rjust(available_width)))
+                formatted_line.extend(temp_items)
+                if available_width > 0 and not self.column_align[index]:
+                    formatted_line.append(('', "".rjust(available_width)))
                 if index != self.column_count - 1:
-                    line += "".ljust(self.span)
+                    formatted_line.append(('', "".ljust(self.span)))
                 index += 1
             while index != self.column_count:
-                line += "".ljust(self.column_widths[index])
+                formatted_line.append(('', "".ljust(self.column_widths[index])))
                 if index != self.column_count - 1:
-                    line += "".ljust(self.span)
+                    formatted_line.append(('', "".ljust(self.span)))
                 index += 1
             if row_index != self.rows_count:
-                line += "\n"
+                formatted_line.append(('', "\n"))
             style = "bg:#111111" if self.has_even and even else ""
             delta = 0 if self.has_header else 1
             style = self.selection_style if self.selection and row_index == self.selected + delta else style
-            tokens.append((style, line))
+            formatted_line = to_formatted_text(formatted_line, style=style)
+            tokens.extend(formatted_line)
             row_index += 1
             even = not even
         return tokens

@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 # Copyright (C) 2022 Sebastien Guerri
 #
 # This file is part of libtable.
@@ -14,8 +16,6 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-#!/usr/bin/env python3
 
 from libtable import TableSelect
 
