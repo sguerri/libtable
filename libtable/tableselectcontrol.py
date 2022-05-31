@@ -69,17 +69,8 @@ class TableSelectControl(BaseTableControl):
 
         return self.key_bindings
 
-    def get_current_index(self):
-        delta = 1 if self.has_header else 0
-        return self.selected - delta
-
-    def get_current_row(self):
-        delta = 1 if self.has_header else 0
-        return (self.selected - delta, self.table["rows"][self.selected - delta])
-
     def get_response(self):
         if self.cancelled:
             return (-1, "Operation cancelled")
         else:
-            delta = 1 if self.has_header else 0
-            return (self.selected - delta, self.table["rows"][self.selected - delta])
+            return self.get_current_row()
