@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 # Copyright (C) 2022 Sebastien Guerri
 #
 # This file is part of libtable.
@@ -15,8 +17,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#!/usr/bin/env python3
-
 from libtable import Table, TableError
 
 
@@ -28,16 +28,16 @@ def main():
             {"name": "DESC", "weight": 2}
         ],
         "rows": [
-            ("1", "AAA", "Description of AAA", "e"),
-            ("2", "BBB dsqd qsd qd qdq q dqs", "Description of BBB"),
+            ("1", "<b>AAA</b> <i>BBB</i>", "Description of AAA", "e"),
+            ("2", "BBB dsqd qsd qd qdq q dqs", "<aaa bg='red'>Description of BBB</aaa>"),
             ("3", 23, False),
-            ("5", "DDD", "Description of DDD"),
+            ("5", "DDD", "<aaa bg='blue'>Description of DDD</aaa>"),
             ("15", "EEE"),
         ]
     }
 
     try:
-        table = Table(data)
+        table = Table(data, show_auto=True)
     except TableError as e:
         print(e)
         return
