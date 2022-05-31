@@ -133,17 +133,27 @@ class BaseTableControl(FormattedTextControl):
         return tokens
 
     def up(self):
-        min = 1 if self.has_header else 0
-        if self.selected != min:
+        min_index = 1 if self.has_header else 0
+        if self.selected != min_index:
             self.selected -= 1
 
     def down(self):
-        max = 0 if self.has_header else 1
-        if self.selected != self.rows_count - max:
+        max_delta = 0 if self.has_header else 1
+        if self.selected != self.rows_count - max_delta:
             self.selected += 1
 
     def clear_selection(self):
         self.selected = -1
+
+    def reset_selection(self):
+        self.selected = 1 if self.has_header else 0
+
+    def set_selection(self, value):
+        min_index = 1 if self.has_header else 0
+        max_index = self.rows_count - (1 - min_index)
+        self.selected = value
+        self.selected = max(min_index, self.selected)
+        self.selected = min(max_index, self.selected)
 
     def to_formatted_text(self):
         return FormattedText(self._get_choice_tokens())
