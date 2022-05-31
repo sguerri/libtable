@@ -21,7 +21,7 @@ from prompt_toolkit.formatted_text import HTML
 from prompt_toolkit.formatted_text import FormattedText
 
 
-class TableControl(FormattedTextControl):
+class BaseTableControl(FormattedTextControl):
     def __init__(self, table, width, **kwargs):
         self.table = table
         self.width = width
@@ -144,3 +144,6 @@ class TableControl(FormattedTextControl):
 
     def clear_selection(self):
         self.selected = -1
+
+    def to_formatted_text(self):
+        return FormattedText(self._get_choice_tokens())

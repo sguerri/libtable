@@ -17,7 +17,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from libtable import Table, TableError
+from libtable import TableControl
+
+from prompt_toolkit import Application
+from prompt_toolkit.layout.layout import Layout
+from prompt_toolkit.layout.containers import HSplit
+from prompt_toolkit.layout.containers import Window
 
 
 def main():
@@ -36,12 +41,12 @@ def main():
         ]
     }
 
-    try:
-        table = Table(data, show_auto=True)
-    except TableError as e:
-        print(e)
-        return
-    table.show()
+    table = TableControl(data)
+
+    print("Application will not be able to exit")
+    body = HSplit([Window(content=table)])
+    app = Application(layout=Layout(body), full_screen=True)
+    app.run()
 
 
 if __name__ == "__main__":

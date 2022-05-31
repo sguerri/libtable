@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 # Copyright (C) 2022 Sebastien Guerri
 #
 # This file is part of libtable.
@@ -15,18 +17,28 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from .tablecontrol import TableControl
-from prompt_toolkit import print_formatted_text
+from libtable import Table
 
 
-class Table:
-    def __init__(self,
-                 table,
-                 show_header=True,
-                 show_auto=False
-                 ):
-        self.table = table
-        self.table_control = TableControl(table, show_header=show_header, show_auto=show_auto)
+def main():
+    data = {
+        "headers": [
+            {"name": "IID", "width": 5, "rightalign": True},
+            {"name": "TITLE"},
+            {"name": "DESC", "weight": 2}
+        ],
+        "rows": [
+            ("1", "<b>AAA</b> <i>BBB</i>", "Description of AAA", "e"),
+            ("2", "BBB dsqd qsd qd qdq q dqs", "<aaa bg='red'>Description of BBB</aaa>"),
+            ("3", 23, False),
+            ("5", "DDD", "<aaa bg='blue'>Description of DDD</aaa>"),
+            ("15", "EEE"),
+        ]
+    }
 
-    def show(self):
-        print_formatted_text(self.table_control.to_formatted_text())
+    table = Table(data)
+    table.show()
+
+
+if __name__ == "__main__":
+    main()
