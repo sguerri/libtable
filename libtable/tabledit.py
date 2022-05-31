@@ -70,8 +70,8 @@ class TableEdit:
             self.cancelled = True
             event.app.exit()
 
-    def addEvent(self, name: str, fn):
-        @self.kb.add(name)
+    def addEvent(self, *name: str, fn):
+        @self.kb.add(*name)
         def _(event):
             delta = 1 if self.table_control.has_header else 0
             fn(self.table_control.selected - delta)

@@ -41,7 +41,7 @@ def main():
         table.updateValue(index, 1, "OK")
 
     table = TableEdit(data, full_screen=False, erase_when_done=True, show_auto=False)
-    table.addEvent('c-o', set_ok)
+    table.addEvent('c-o', 'e', fn=set_ok)
     table.show()
     print(json.dumps(data, indent=4))
 
