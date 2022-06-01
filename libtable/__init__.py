@@ -18,6 +18,7 @@
 from .tablecontrol import TableControl
 from .tableselectcontrol import TableSelectControl
 from .table import Table
+from .tableprompt import TablePrompt
 from .tableselect import TableSelect
 from ._exception import TableError
 
@@ -30,6 +31,7 @@ __all__ = [
     "TableControl",
     "TableSelectControl",
     "Table",
+    "TablePrompt",
     "TableSelect",
     "TableError"
 ]
