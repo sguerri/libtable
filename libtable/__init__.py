@@ -21,6 +21,7 @@ from .tableeditcontrol import TableEditControl
 from .table import Table
 from .tableprompt import TablePrompt
 from .tableselect import TableSelect
+from .tabledit import TableEdit
 from ._exception import TableError
 
 __doc__ = """
@@ -35,5 +36,6 @@ __all__ = [
     "Table",
     "TablePrompt",
     "TableSelect",
+    "TableEdit",
     "TableError"
 ]
