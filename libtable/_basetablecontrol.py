@@ -68,7 +68,83 @@ class BaseTableControl(FormattedTextControl):
             available_width -= nb_span
             self.column_widths[index] = col_width
 
+    def __get__header_tokens(self):
+        tokens = []
+        if self.has_header:
+            line = ""
+            if self.has_auto:
+                line += "N".rjust(self.rows_count_width)
+                line += "".ljust(self.span)
+            index = 0
+            for header in self.table["headers"]:
+                if "name" not in header:
+                    continue
+                content = header["name"][0:self.column_widths[index]]
+                if self.column_align[index]:
+                    content = content.rjust(self.column_widths[index])
+                else:
+                    content = content.ljust(self.column_widths[index])
+                line += content
+                if index != self.column_count - 1:
+                    line += "".ljust(self.span)
+                index += 1
+            line += "\n"
+            tokens.append((self.header_style, line))
+        return tokens
+
+    def __get_rows_tokens(self):
+        tokens = []
+        row_index = 1
+        even = True
+        for row in self.table["rows"]:
+            formatted_line = FormattedText([])
+            if self.has_auto:
+                formatted_line.append(('', str(row_index).rjust(self.rows_count_width)))
+                formatted_line.append(('', "".ljust(self.span)))
+            index = 0
+            for cell in row:
+                if index >= self.column_count:
+                    break
+                available_width = self.column_widths[index]
+                cell_items = to_formatted_text(HTML(cell)) if cell is not None else [('', '')]
+                temp_items = []
+                for cell_item in cell_items:
+                    content = cell_item[1][0:available_width]
+                    available_width -= len(content)
+                    temp_items.append((cell_item[0], content))
+                if available_width > 0 and self.column_align[index]:
+                    formatted_line.append(('', "".rjust(available_width)))
+                formatted_line.extend(temp_items)
+                if available_width > 0 and not self.column_align[index]:
+                    formatted_line.append(('', "".rjust(available_width)))
+                if index != self.column_count - 1:
+                    formatted_line.append(('', "".ljust(self.span)))
+                index += 1
+            while index != self.column_count:
+                formatted_line.append(('', "".ljust(self.column_widths[index])))
+                if index != self.column_count - 1:
+                    formatted_line.append(('', "".ljust(self.span)))
+                index += 1
+            if row_index != self.rows_count:
+                formatted_line.append(('', "\n"))
+            style = "bg:#111111" if self.has_even and even else ""
+            delta = 0 if self.has_header else 1
+            style = self.selection_style if self.selection and row_index == self.selected + delta else style
+            formatted_line = to_formatted_text(formatted_line, style=style)
+            # tokens.extend(formatted_line)
+            tokens.append(formatted_line)
+            row_index += 1
+            even = not even
+        return tokens
+
     def _get_choice_tokens(self):
+        tokens = []
+        if self.has_header:
+            tokens.extend(self.__get__header_tokens())
+        for row in self.__get_rows_tokens():
+            tokens.extend(row)
+        return tokens
+        """
         tokens = []
         if self.has_header:
             line = ""
@@ -131,6 +207,7 @@ class BaseTableControl(FormattedTextControl):
             row_index += 1
             even = not even
         return tokens
+        """
 
     def up(self):
         min_index = 1 if self.has_header else 0
