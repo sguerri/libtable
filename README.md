@@ -1,7 +1,7 @@
 # Welcome to libtable
 
 [![](https://badgen.net/github/release/sguerri/libtable)](https://github.com/sguerri/libtable/releases/)
-[![](https://img.shields.io/github/workflow/status/sguerri/libtable/Build/v0.1.1)](https://github.com/sguerri/libtable/actions/workflows/build.yml)
+[![](https://img.shields.io/github/workflow/status/sguerri/libtable/Build/v0.2.0)](https://github.com/sguerri/libtable/actions/workflows/build.yml)
 [![](https://badgen.net/github/license/sguerri/libtable)](https://www.gnu.org/licenses/)
 [![](https://badgen.net/pypi/v/libtable)](https://pypi.org/project/libtable/)
 [![](https://badgen.net/pypi/python/libtable)](#)
