@@ -17,8 +17,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import json
-from libtable import TableEdit
+from libtable import TableEditControl
+
+from prompt_toolkit import Application
+from prompt_toolkit.layout.layout import Layout
+from prompt_toolkit.layout.containers import HSplit
+from prompt_toolkit.layout.containers import Window
 
 
 def main():
@@ -29,21 +33,21 @@ def main():
             {"name": "DESC", "weight": 2}
         ],
         "rows": [
-            (1, "AAA", "Description of AAA", "e"),
-            ("2", "BBB dsqd qsd qd qdq q dqs", "Description of BBB"),
-            (3, "23", False),
-            ("5", "DDD", "Description of DDD"),
-            (15, "EEE"),
+            ("1", "<b>AAA</b> <i>BBB</i>", "Description of AAA", "e"),
+            ("2", "BBB dsqd qsd qd qdq q dqs", "<aaa bg='red'>Description of BBB</aaa>"),
+            ("3", 23, False),
+            ("5", "DDD", "<aaa bg='blue'>Description of DDD</aaa>"),
+            ("15", "EEE"),
         ]
     }
 
-    def set_ok(index):
-        table.updateValue(index, 1, "OK")
+    table = TableEditControl(data)
 
-    table = TableEdit(data, full_screen=False, erase_when_done=True, show_auto=False)
-    table.addEvent('c-o', 'e', fn=set_ok)
-    table.show()
-    print(json.dumps(data, indent=4))
+    body = HSplit([Window(content=table)])
+    app = Application(layout=Layout(body), full_screen=True, key_bindings=table.get_key_bindings())
+    app.run()
+
+    print(table.get_response())
 
 
 if __name__ == "__main__":

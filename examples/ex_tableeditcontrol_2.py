@@ -17,13 +17,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from libtable import TableSelectControl
+from libtable import TableEditControl
 
 from prompt_toolkit import Application
 from prompt_toolkit.layout.layout import Layout
 from prompt_toolkit.layout.containers import HSplit
 from prompt_toolkit.layout.containers import Window
-from prompt_toolkit.layout.controls import FormattedTextControl
 
 
 def main():
@@ -42,11 +41,13 @@ def main():
         ]
     }
 
-    table = TableSelectControl(data)
-    response = FormattedTextControl("toto")
-    hp = HSplit([Window(content=table), Window(content=response)])
+    def set_ok_1(index, row):
+        table.updateValue(index, 1, "OK")
 
-    body = HSplit([hp, Window(content=response)])
+    table = TableEditControl(data)
+    table.addEvent('c-o', fn=set_ok_1)
+
+    body = HSplit([Window(content=table)])
     app = Application(layout=Layout(body), full_screen=True, key_bindings=table.get_key_bindings())
     app.run()
 

@@ -17,6 +17,7 @@
 
 from .tablecontrol import TableControl
 from .tableselectcontrol import TableSelectControl
+from .tableeditcontrol import TableEditControl
 from .table import Table
 from .tableprompt import TablePrompt
 from .tableselect import TableSelect
@@ -30,6 +31,7 @@ libtable - A library for cli tables
 __all__ = [
     "TableControl",
     "TableSelectControl",
+    "TableEditControl",
     "Table",
     "TablePrompt",
     "TableSelect",
