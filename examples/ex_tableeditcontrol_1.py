@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 # Copyright (C) 2022 Sebastien Guerri
 #
 # This file is part of libtable.
@@ -15,26 +17,38 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from .tableselectcontrol import TableSelectControl
+from libtable import TableEditControl
+
 from prompt_toolkit import Application
 from prompt_toolkit.layout.layout import Layout
 from prompt_toolkit.layout.containers import HSplit
 from prompt_toolkit.layout.containers import Window
 
 
-class TableSelect:
-    def __init__(self,
-                 table,
-                 full_screen,
-                 erase_when_done=False,
-                 show_header=True,
-                 show_auto=False
-                 ):
-        self.table = table
-        self.table_control = TableSelectControl(self.table, show_header=show_header, show_auto=show_auto)
-        body = HSplit([Window(content=self.table_control)])
-        self.app = Application(layout=Layout(body), full_screen=full_screen, key_bindings=self.table_control.get_key_bindings(), erase_when_done=erase_when_done)
+def main():
+    data = {
+        "headers": [
+            {"name": "IID", "width": 5, "rightalign": True},
+            {"name": "TITLE"},
+            {"name": "DESC", "weight": 2}
+        ],
+        "rows": [
+            ("1", "<b>AAA</b> <i>BBB</i>", "Description of AAA", "e"),
+            ("2", "BBB dsqd qsd qd qdq q dqs", "<aaa bg='red'>Description of BBB</aaa>"),
+            ("3", 23, False),
+            ("5", "DDD", "<aaa bg='blue'>Description of DDD</aaa>"),
+            ("15", "EEE"),
+        ]
+    }
 
-    def show(self):
-        self.app.run()
-        return self.table_control.get_response()
+    table = TableEditControl(data)
+
+    body = HSplit([Window(content=table)])
+    app = Application(layout=Layout(body), full_screen=True, key_bindings=table.get_key_bindings())
+    app.run()
+
+    print(table.get_response())
+
+
+if __name__ == "__main__":
+    main()

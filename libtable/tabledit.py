@@ -15,6 +15,40 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+from .tableeditcontrol import TableEditControl
+from prompt_toolkit import Application
+from prompt_toolkit.layout.layout import Layout
+from prompt_toolkit.layout.containers import HSplit
+from prompt_toolkit.layout.containers import Window
+
+
+class TableEdit:
+    def __init__(self,
+                 table,
+                 full_screen,
+                 erase_when_done=False,
+                 show_header=True,
+                 show_auto=False
+                 ):
+        self.table = table
+        self.full_screen = full_screen
+        self.erase_when_done = erase_when_done
+        self.table_control = TableEditControl(self.table, show_header=show_header, show_auto=show_auto)
+
+    def addEvent(self, *name: str, fn):
+        self.table_control.addEvent(*name, fn=fn)
+
+    def updateValue(self, index, column, value):
+        self.table_control.updateValue(index, column, value)
+
+    def show(self):
+        body = HSplit([Window(content=self.table_control)])
+        self.app = Application(layout=Layout(body), full_screen=self.full_screen, key_bindings=self.table_control.get_key_bindings(), erase_when_done=self.erase_when_done)
+        self.app.run()
+        return self.table_control.get_response()
+
+
+"""
 import os
 from prompt_toolkit import Application
 from prompt_toolkit.key_binding import KeyBindings
@@ -70,8 +104,8 @@ class TableEdit:
             self.cancelled = True
             event.app.exit()
 
-    def addEvent(self, name: str, fn):
-        @self.kb.add(name)
+    def addEvent(self, *name: str, fn):
+        @self.kb.add(*name)
         def _(event):
             delta = 1 if self.table_control.has_header else 0
             fn(self.table_control.selected - delta)
@@ -87,3 +121,4 @@ class TableEdit:
             return (-1, "Operation cancelled")
         else:
             return (1, "Done")
+"""

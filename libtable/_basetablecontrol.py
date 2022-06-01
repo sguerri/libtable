@@ -21,7 +21,7 @@ from prompt_toolkit.formatted_text import HTML
 from prompt_toolkit.formatted_text import FormattedText
 
 
-class TableControl(FormattedTextControl):
+class BaseTableControl(FormattedTextControl):
     def __init__(self, table, width, **kwargs):
         self.table = table
         self.width = width
@@ -133,14 +133,41 @@ class TableControl(FormattedTextControl):
         return tokens
 
     def up(self):
-        min = 1 if self.has_header else 0
-        if self.selected != min:
+        min_index = 1 if self.has_header else 0
+        if self.selected != min_index:
             self.selected -= 1
 
     def down(self):
-        max = 0 if self.has_header else 1
-        if self.selected != self.rows_count - max:
+        max_delta = 0 if self.has_header else 1
+        if self.selected != self.rows_count - max_delta:
             self.selected += 1
+
+    def get_selection(self):
+        if self.selected == -1:
+            return -1
+        delta = 1 if self.has_header else 0
+        return self.selected - delta
 
     def clear_selection(self):
         self.selected = -1
+
+    def reset_selection(self):
+        self.selected = 1 if self.has_header else 0
+
+    def set_selection(self, value):
+        min_index = 1 if self.has_header else 0
+        max_index = self.rows_count - (1 - min_index)
+        self.selected = value
+        self.selected = max(min_index, self.selected)
+        self.selected = min(max_index, self.selected)
+
+    def get_current_index(self):
+        return self.get_selection()
+
+    def get_current_row(self):
+        if self.selected == -1:
+            return (-1, 'No selection')
+        return (self.get_selection(), self.table["rows"][self.get_selection()])
+
+    def to_formatted_text(self):
+        return FormattedText(self._get_choice_tokens())

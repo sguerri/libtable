@@ -17,7 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from libtable import TableSelect
+from libtable import TablePrompt
 
 
 def main():
@@ -28,17 +28,22 @@ def main():
             {"name": "DESC", "weight": 2}
         ],
         "rows": [
-            ("1", "AAA", "Description of AAA", "e"),
-            ("2", "BBB dsqd qsd qd qdq q dqs", "Description of BBB"),
+            ("1", "<b>AAA</b> <i>BBB</i>", "Description of AAA", "e"),
+            ("2", "BBB dsqd qsd qd qdq q dqs", "<aaa bg='red'>Description of BBB</aaa>"),
             ("3", 23, False),
-            ("5", "DDD", "Description of DDD"),
+            ("5", "DDD", "<aaa bg='blue'>Description of DDD</aaa>"),
             ("15", "EEE"),
         ]
     }
 
-    table = TableSelect(data, full_screen=False, erase_when_done=True, show_auto=False)
-    selected = table.show()
-    print(selected)
+    table = TablePrompt(data, show_auto=False, index_column="IID")
+    (index, item) = table.show()
+    if index == -1:
+        print("ERROR")
+        print(item)
+    else:
+        print("RESPONSE")
+        print(item)
 
 
 if __name__ == "__main__":

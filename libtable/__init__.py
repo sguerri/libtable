@@ -15,9 +15,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+from .tablecontrol import TableControl
+from .tableselectcontrol import TableSelectControl
+from .tableeditcontrol import TableEditControl
 from .table import Table
-from .tableselect import TableSelect
 from .tableprompt import TablePrompt
+from .tableselect import TableSelect
 from .tabledit import TableEdit
 from ._exception import TableError
 
@@ -27,9 +30,12 @@ libtable - A library for cli tables
 """
 
 __all__ = [
+    "TableControl",
+    "TableSelectControl",
+    "TableEditControl",
     "Table",
-    "TableSelect",
     "TablePrompt",
+    "TableSelect",
     "TableEdit",
     "TableError"
 ]
