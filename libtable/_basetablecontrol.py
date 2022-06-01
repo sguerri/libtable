@@ -68,7 +68,7 @@ class BaseTableControl(FormattedTextControl):
             available_width -= nb_span
             self.column_widths[index] = col_width
 
-    def __get__header_tokens(self):
+    def _get__header_tokens(self):
         tokens = []
         if self.has_header:
             line = ""
@@ -92,7 +92,7 @@ class BaseTableControl(FormattedTextControl):
             tokens.append((self.header_style, line))
         return tokens
 
-    def __get_rows_tokens(self):
+    def _get_rows_tokens(self):
         tokens = []
         row_index = 1
         even = True
@@ -140,8 +140,8 @@ class BaseTableControl(FormattedTextControl):
     def _get_choice_tokens(self):
         tokens = []
         if self.has_header:
-            tokens.extend(self.__get__header_tokens())
-        for row in self.__get_rows_tokens():
+            tokens.extend(self._get__header_tokens())
+        for row in self._get_rows_tokens():
             tokens.extend(row)
         return tokens
         """

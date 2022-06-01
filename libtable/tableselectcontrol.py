@@ -31,6 +31,7 @@ class TableSelectControl(BaseTableControl):
         self.table = table
         self.width = os.get_terminal_size().columns
         self.cancelled = False
+        self.searched = ""
         self.global_key_bindings = global_key_bindings
         self.__check(show_header, show_auto)
         super().__init__(self.table, self.width)
@@ -46,6 +47,18 @@ class TableSelectControl(BaseTableControl):
             self.table["options"]["show_header"] = show_header
         if "show_auto" not in self.table["options"]:
             self.table["options"]["show_auto"] = show_auto
+
+    def _get_rows_tokens(self):
+        rows = super()._get_rows_tokens()
+        return [rows[0]]
+
+    def _get_choice_tokens(self):
+        tokens = super()._get_choice_tokens()
+        # tokens = [tokens[0]]
+        if self.searched != "":
+            tokens.append(("", "\n"))
+            tokens.append(("", self.searched))
+        return tokens
 
     def get_key_bindings(self):
         self.key_bindings = KeyBindings()
@@ -66,6 +79,19 @@ class TableSelectControl(BaseTableControl):
         def _(event):
             self.cancelled = True
             event.app.exit()
+
+        @self.key_bindings.add('escape')
+        def _(event):
+            self.searched = ""
+
+        @self.key_bindings.add('backspace')
+        def _(event):
+            self.searched = self.searched[:-1]
+
+        @self.key_bindings.add('<any>')
+        def _(event):
+            char = event.key_sequence[0].data
+            self.searched += char
 
         return self.key_bindings
 
