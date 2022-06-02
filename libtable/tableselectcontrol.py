@@ -26,12 +26,15 @@ class TableSelectControl(BaseTableControl):
                  table,
                  show_header=True,
                  show_auto=False,
-                 global_key_bindings=True
+                 global_key_bindings=True,
+                 show_search=True
                  ):
         self.table = table
         self.width = os.get_terminal_size().columns
         self.cancelled = False
+        self.show_search = show_search
         self.searched = ""
+        self.searched_update = False
         self.global_key_bindings = global_key_bindings
         self.__check(show_header, show_auto)
         super().__init__(self.table, self.width)
@@ -50,14 +53,33 @@ class TableSelectControl(BaseTableControl):
 
     def _get_rows_tokens(self):
         rows = super()._get_rows_tokens()
-        return [rows[0]]
+        new_rows = []
+        if self.show_search and self.searched != "":
+            self.indexes.clear()
+            new_index = 0
+            old_index = 0
+            for row in rows:
+                is_filtered = False
+                for (style, text) in row:
+                    if text.lower().__contains__(self.searched.lower()):
+                        is_filtered = True
+                if is_filtered:
+                    new_rows.append(row)
+                    self.indexes[new_index] = old_index
+                    new_index += 1
+                old_index += 1
+        else:
+            new_rows = rows
+        return new_rows
 
     def _get_choice_tokens(self):
         tokens = super()._get_choice_tokens()
-        # tokens = [tokens[0]]
-        if self.searched != "":
+        if self.show_search and self.searched != "":
             tokens.append(("", "\n"))
-            tokens.append(("", self.searched))
+            tokens.append(("bg:ansiyellow fg:ansiblack italic", f"> Searching: {self.searched} "))
+        if self.show_search and self.searched_update:
+            self.searched_update = False
+            self.reset_selection()
         return tokens
 
     def get_key_bindings(self):
@@ -80,18 +102,21 @@ class TableSelectControl(BaseTableControl):
             self.cancelled = True
             event.app.exit()
 
-        @self.key_bindings.add('escape')
+        @self.key_bindings.add('escape', filter=self.show_search)
         def _(event):
             self.searched = ""
+            self.searched_update = True
 
-        @self.key_bindings.add('backspace')
+        @self.key_bindings.add('backspace', filter=self.show_search)
         def _(event):
             self.searched = self.searched[:-1]
+            self.searched_update = True
 
-        @self.key_bindings.add('<any>')
+        @self.key_bindings.add('<any>', filter=self.show_search)
         def _(event):
             char = event.key_sequence[0].data
             self.searched += char
+            self.searched_update = True
 
         return self.key_bindings
 

@@ -26,7 +26,7 @@ class BaseTableControl(FormattedTextControl):
         self.table = table
         self.width = width
         self.rows_count = len(table["rows"])
-        self.rows_count_width = len(str(self.rows_count)) + 1
+        self.rows_count_width = len(str(len(table["rows"]))) + 1
         self.column_count = len(table["headers"])
         self.column_widths: dict = {}
         self.column_align: dict = {}
@@ -38,6 +38,7 @@ class BaseTableControl(FormattedTextControl):
         self.selection = table["options"]["selection"] if "options" in table and "selection" in table["options"] else True
         self.selection_style = table["options"]["selection_style"] if "options" in table and "selection_style" in table["options"] else "bg:ansiblue"
         self.selected = 1 if self.has_header else 0
+        self.indexes = {}
         self.__init_table()
         super().__init__(self._get_choice_tokens, show_cursor=False, **kwargs)
 
@@ -93,9 +94,10 @@ class BaseTableControl(FormattedTextControl):
         return tokens
 
     def _get_rows_tokens(self):
+        self.indexes.clear()
         tokens = []
         row_index = 1
-        even = True
+        # even = True
         for row in self.table["rows"]:
             formatted_line = FormattedText([])
             if self.has_auto:
@@ -125,23 +127,47 @@ class BaseTableControl(FormattedTextControl):
                 if index != self.column_count - 1:
                     formatted_line.append(('', "".ljust(self.span)))
                 index += 1
-            if row_index != self.rows_count:
-                formatted_line.append(('', "\n"))
-            style = "bg:#111111" if self.has_even and even else ""
+            # if row_index != len(self.table["rows"]):
+            # formatted_line.append(('', "\n"))
+            # style = "bg:#111111" if self.has_even and even else ""
+            # delta = 0 if self.has_header else 1
+            # style = self.selection_style if self.selection and row_index == self.selected + delta else style
+            # formatted_line = to_formatted_text(formatted_line, style=style)
+            # tokens.extend(formatted_line)
+            tokens.append(formatted_line)
+            self.indexes[row_index - 1] = row_index - 1
+            row_index += 1
+            # even = not even
+        return tokens
+
+    def __get_rows_tokens_with_style(self):
+        rows = self._get_rows_tokens()
+        self.rows_count = len(rows)
+        tokens = []
+        even = True
+        row_index = 1
+        for row in rows:
+            style = "bg:#222222" if self.has_even and even else ""
             delta = 0 if self.has_header else 1
             style = self.selection_style if self.selection and row_index == self.selected + delta else style
-            formatted_line = to_formatted_text(formatted_line, style=style)
-            # tokens.extend(formatted_line)
+            if row_index != self.rows_count:
+                row.append(('', "\n"))
+            formatted_line = to_formatted_text(row, style=style)
             tokens.append(formatted_line)
             row_index += 1
             even = not even
+        if self.rows_count == 0:
+            tokens.append([("italic fg:grey", "No data")])
         return tokens
+
+    # def rows_count(self):
+    #    return len(self._get_rows_tokens())
 
     def _get_choice_tokens(self):
         tokens = []
         if self.has_header:
             tokens.extend(self._get__header_tokens())
-        for row in self._get_rows_tokens():
+        for row in self.__get_rows_tokens_with_style():
             tokens.extend(row)
         return tokens
         """
@@ -239,12 +265,19 @@ class BaseTableControl(FormattedTextControl):
         self.selected = min(max_index, self.selected)
 
     def get_current_index(self):
-        return self.get_selection()
+        try:
+            return self.indexes[self.get_selection()]
+        except Exception:
+            return -1
 
     def get_current_row(self):
         if self.selected == -1:
             return (-1, 'No selection')
-        return (self.get_selection(), self.table["rows"][self.get_selection()])
+        # return (self.get_selection(), self.table["rows"][self.get_selection()])
+        index = self.get_current_index()
+        if index == -1:
+            return (-1, 'No selection')
+        return (index, self.table["rows"][index])
 
     def to_formatted_text(self):
         return FormattedText(self._get_choice_tokens())
