@@ -17,6 +17,8 @@
 
 import os
 from prompt_toolkit.key_binding import KeyBindings
+from prompt_toolkit.filters import has_focus
+from prompt_toolkit.filters.utils import to_filter
 from ._basetablecontrol import BaseTableControl
 from ._exception import TableError
 
@@ -88,24 +90,24 @@ class TableSelectControl(BaseTableControl):
     def get_key_bindings(self):
         self.key_bindings = KeyBindings()
 
-        @self.key_bindings.add('up')
+        @self.key_bindings.add('up', filter=has_focus(self))
         def _(event):
             self.up()
 
-        @self.key_bindings.add('down')
+        @self.key_bindings.add('down', filter=has_focus(self))
         def _(event):
             self.down()
 
-        @self.key_bindings.add('enter', filter=self.global_key_bindings)
+        @self.key_bindings.add('enter', filter=has_focus(self) & to_filter(self.global_key_bindings))
         def _(event):
             event.app.exit()
 
-        @self.key_bindings.add('c-c', filter=self.global_key_bindings)
+        @self.key_bindings.add('c-c', filter=has_focus(self) & to_filter(self.global_key_bindings))
         def _(event):
             self.cancelled = True
             event.app.exit()
 
-        @self.key_bindings.add('c-s', '<any>', filter=self.show_sort)
+        @self.key_bindings.add('c-s', '<any>', filter=has_focus(self) & to_filter(self.show_sort))
         def _(event):
             char = event.key_sequence[1].data
             if char not in '0123456789':
@@ -127,17 +129,17 @@ class TableSelectControl(BaseTableControl):
                 else:
                     self.table["rows"] = sorted(self.table["rows"], key=sort)
 
-        @self.key_bindings.add('escape', filter=self.show_search)
+        @self.key_bindings.add('escape', filter=has_focus(self) & to_filter(self.show_search))
         def _(event):
             self.searched = ""
             self.searched_update = True
 
-        @self.key_bindings.add('backspace', filter=self.show_search)
+        @self.key_bindings.add('backspace', filter=has_focus(self) & to_filter(self.show_search))
         def _(event):
             self.searched = self.searched[:-1]
             self.searched_update = True
 
-        @self.key_bindings.add('<any>', filter=self.show_search)
+        @self.key_bindings.add('<any>', filter=has_focus(self) & to_filter(self.show_search))
         def _(event):
             char = event.key_sequence[0].data
             self.searched += char
