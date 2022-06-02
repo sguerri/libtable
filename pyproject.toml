@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "libtable"
-version = "0.2.0"
+version = "0.2.1"
 description = "Python library for cli tables"
 authors = ["Sebastien GUERRI <nierrgu@bmel.fr>"]
 license = "GPL-3.0"
