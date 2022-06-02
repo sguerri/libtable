@@ -27,10 +27,17 @@ class TableEditControl(TableSelectControl):
                  show_header=True,
                  show_auto=False,
                  global_key_bindings=True,
-                 show_search=True
+                 show_search=True,
+                 show_sort=False
                  ):
         self.kb = KeyBindings()
-        super().__init__(table, show_header=show_header, show_auto=show_auto, global_key_bindings=global_key_bindings, show_search=show_search)
+        super().__init__(table,
+                         show_header=show_header,
+                         show_auto=show_auto,
+                         global_key_bindings=global_key_bindings,
+                         show_search=show_search,
+                         show_sort=show_sort
+                         )
 
     def get_key_bindings(self):
         key_bindings = super().get_key_bindings()

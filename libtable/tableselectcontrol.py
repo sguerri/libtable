@@ -27,14 +27,17 @@ class TableSelectControl(BaseTableControl):
                  show_header=True,
                  show_auto=False,
                  global_key_bindings=True,
-                 show_search=True
+                 show_search=True,
+                 show_sort=False
                  ):
         self.table = table
         self.width = os.get_terminal_size().columns
         self.cancelled = False
         self.show_search = show_search
+        self.show_sort = show_sort
         self.searched = ""
         self.searched_update = False
+        self.sort_methods = {}
         self.global_key_bindings = global_key_bindings
         self.__check(show_header, show_auto)
         super().__init__(self.table, self.width)
@@ -61,7 +64,7 @@ class TableSelectControl(BaseTableControl):
             for row in rows:
                 is_filtered = False
                 for (style, text) in row:
-                    if text.lower().__contains__(self.searched.lower()):
+                    if self.searched.lower() in text.lower():
                         is_filtered = True
                 if is_filtered:
                     new_rows.append(row)
@@ -102,6 +105,28 @@ class TableSelectControl(BaseTableControl):
             self.cancelled = True
             event.app.exit()
 
+        @self.key_bindings.add('c-s', '<any>', filter=self.show_sort)
+        def _(event):
+            char = event.key_sequence[1].data
+            if char not in '0123456789':
+                return
+            char = int(char)
+            delta = 1 if self.has_auto else 0
+
+            def sort(row):
+                try:
+                    return str(row[char-delta])
+                except Exception:
+                    return ""
+
+            if self.has_auto and char == 0:
+                pass
+            else:
+                if (char - delta) in self.sort_methods.keys():
+                    self.table["rows"] = sorted(self.table["rows"], key=self.sort_methods[char - delta])
+                else:
+                    self.table["rows"] = sorted(self.table["rows"], key=sort)
+
         @self.key_bindings.add('escape', filter=self.show_search)
         def _(event):
             self.searched = ""
@@ -119,6 +144,9 @@ class TableSelectControl(BaseTableControl):
             self.searched_update = True
 
         return self.key_bindings
+
+    def add_sort_method(self, index: int, fn):
+        self.sort_methods[index] = fn
 
     def get_response(self):
         if self.cancelled:
