@@ -15,15 +15,16 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+from ._baseclass import BaseTableData
 from .tablecontrol import TableControl
 from prompt_toolkit import print_formatted_text
 
 
 class Table:
     def __init__(self,
-                 table,
-                 show_header=True,
-                 show_auto=False
+                 table: BaseTableData,
+                 show_header: bool = None,
+                 show_auto: bool = None
                  ):
         self.table = table
         self.table_control = TableControl(table, show_header=show_header, show_auto=show_auto)

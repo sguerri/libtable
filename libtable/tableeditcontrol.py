@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+from ._baseclass import BaseTableData
 from .tableselectcontrol import TableSelectControl
 
 from prompt_toolkit.key_binding import KeyBindings
@@ -23,13 +24,13 @@ from prompt_toolkit.key_binding import merge_key_bindings
 
 class TableEditControl(TableSelectControl):
     def __init__(self,
-                 table,
-                 show_header=True,
-                 show_auto=False,
-                 global_key_bindings=True,
-                 show_search=True,
-                 show_sort=False
-                 ):
+                 table: BaseTableData,
+                 show_header: bool = None,
+                 show_auto: bool = None,
+                 global_key_bindings: bool = True,
+                 show_search: bool = True,
+                 show_sort: bool = False
+                 ) -> None:
         self.kb = KeyBindings()
         super().__init__(table,
                          show_header=show_header,
@@ -39,19 +40,11 @@ class TableEditControl(TableSelectControl):
                          show_sort=show_sort
                          )
 
-    def get_key_bindings(self):
+    def get_key_bindings(self) -> KeyBindings:
         key_bindings = super().get_key_bindings()
         return merge_key_bindings([self.kb, key_bindings])
 
-    def addEvent(self, *name: str, fn):
+    def addEvent(self, *name: str, fn) -> None:
         @self.kb.add(*name)
         def _(event):
-            fn(self.get_current_index(), self.get_current_row())
-
-    def updateValue(self, index, column, value):
-        try:
-            temp = list(self.table["rows"][index])
-            temp[column] = value
-            self.table["rows"][index] = tuple(temp)
-        except Exception:
-            return
+            fn(self.get_current_index(), self.get_current_row()[1])

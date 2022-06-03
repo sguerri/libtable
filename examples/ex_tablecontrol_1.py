@@ -17,29 +17,15 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import data as example
 from libtable import TableControl
 
 from prompt_toolkit import print_formatted_text
 
 
 def main():
-    data = {
-        "headers": [
-            {"name": "IID", "width": 5, "rightalign": True},
-            {"name": "TITLE"},
-            {"name": "DESC", "weight": 2}
-        ],
-        "rows": [
-            ("1", "<b>AAA</b> <i>BBB</i>", "Description of AAA", "e"),
-            ("2", "BBB dsqd qsd qd qdq q dqs", "<aaa bg='red'>Description of BBB</aaa>"),
-            ("3", 23, False),
-            ("5", "DDD", "<aaa bg='blue'>Description of DDD</aaa>"),
-            ("15", "EEE"),
-        ]
-    }
-
+    data = example.get_data()
     table = TableControl(data)
-
     print_formatted_text(table.to_formatted_text())
 
 

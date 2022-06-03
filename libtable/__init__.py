@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+from ._baseclass import BaseTableData, BaseTableHeader, BaseTableOptions
 from .tablecontrol import TableControl
 from .tableselectcontrol import TableSelectControl
 from .tableeditcontrol import TableEditControl
@@ -22,7 +23,6 @@ from .table import Table
 from .tableprompt import TablePrompt
 from .tableselect import TableSelect
 from .tabledit import TableEdit
-from ._exception import TableError
 
 __doc__ = """
 libtable - A library for cli tables
@@ -30,12 +30,14 @@ libtable - A library for cli tables
 """
 
 __all__ = [
+    "BaseTableData",
+    "BaseTableHeader",
+    "BaseTableOptions",
     "TableControl",
     "TableSelectControl",
     "TableEditControl",
     "Table",
     "TablePrompt",
     "TableSelect",
-    "TableEdit",
-    "TableError"
+    "TableEdit"
 ]
