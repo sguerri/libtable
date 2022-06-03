@@ -17,29 +17,19 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import data as example
 from libtable import TableEdit
 
 
 def main():
-    data = {
-        "headers": [
-            {"name": "IID", "width": 5, "rightalign": True},
-            {"name": "TITLE"},
-            {"name": "DESC", "weight": 2}
-        ],
-        "rows": [
-            ("1", "<b>AAA</b> <i>BBB</i>", "Description of AAA", "e"),
-            ("2", "BBB dsqd qsd qd qdq q dqs", "<aaa bg='red'>Description of BBB</aaa>"),
-            ("3", 23, False),
-            ("5", "DDD", "<aaa bg='blue'>Description of DDD</aaa>"),
-            ("15", "EEE"),
-        ]
-    }
+    data = example.get_data()
 
     def set_ok_1(index, row):
-        table.updateValue(index, 1, "OK")
+        if index == -1:
+            return
+        row["title"] = "OK"
 
-    table = TableEdit(data, full_screen=False, erase_when_done=False, show_auto=False)
+    table = TableEdit(data)
     table.addEvent('c-o', fn=set_ok_1)
     selected = table.show()
     print(selected)

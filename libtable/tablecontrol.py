@@ -16,30 +16,28 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import os
+
+from ._baseclass import BaseTableData
 from ._basetablecontrol import BaseTableControl
-from ._exception import TableError
 
 
 class TableControl(BaseTableControl):
     def __init__(self,
-                 table,
-                 show_header=True,
-                 show_auto=False
-                 ):
+                 table: BaseTableData,
+                 show_header: bool = None,
+                 show_auto: bool = None
+                 ) -> None:
         self.table = table
         self.width = os.get_terminal_size().columns
         self.__check(show_header, show_auto)
         super().__init__(self.table, self.width)
         self.clear_selection()
 
-    def __check(self, show_header: bool, show_auto: bool):
-        if "headers" not in self.table:
-            raise TableError("Incorrect table - missing headers")
-        if "rows" not in self.table:
-            raise TableError("Incorrect table - missing rows")
-        if "options" not in self.table:
-            self.table["options"] = {}
-        if "show_header" not in self.table["options"]:
-            self.table["options"]["show_header"] = show_header
-        if "show_auto" not in self.table["options"]:
-            self.table["options"]["show_auto"] = show_auto
+    def __check(self,
+                show_header: bool,
+                show_auto: bool
+                ) -> None:
+        if show_header is not None:
+            self.table.options.show_header = show_header
+        if show_auto is not None:
+            self.table.options.show_auto = show_auto

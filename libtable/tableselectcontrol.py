@@ -16,22 +16,25 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import os
+
+from ._baseclass import BaseTableData
+from ._basetablecontrol import BaseTableControl
+
 from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.filters import has_focus
 from prompt_toolkit.filters.utils import to_filter
-from ._basetablecontrol import BaseTableControl
-from ._exception import TableError
+from prompt_toolkit.formatted_text import FormattedText
 
 
 class TableSelectControl(BaseTableControl):
     def __init__(self,
-                 table,
-                 show_header=True,
-                 show_auto=False,
-                 global_key_bindings=True,
-                 show_search=True,
-                 show_sort=False
-                 ):
+                 table: BaseTableData,
+                 show_header: bool = None,
+                 show_auto: bool = None,
+                 global_key_bindings: bool = True,
+                 show_search: bool = True,
+                 show_sort: bool = False
+                 ) -> None:
         self.table = table
         self.width = os.get_terminal_size().columns
         self.cancelled = False
@@ -44,19 +47,16 @@ class TableSelectControl(BaseTableControl):
         self.__check(show_header, show_auto)
         super().__init__(self.table, self.width)
 
-    def __check(self, show_header: bool, show_auto: bool):
-        if "headers" not in self.table:
-            raise TableError("Incorrect table - missing headers")
-        if "rows" not in self.table:
-            raise TableError("Incorrect table - missing rows")
-        if "options" not in self.table:
-            self.table["options"] = {}
-        if "show_header" not in self.table["options"]:
-            self.table["options"]["show_header"] = show_header
-        if "show_auto" not in self.table["options"]:
-            self.table["options"]["show_auto"] = show_auto
+    def __check(self,
+                show_header: bool,
+                show_auto: bool
+                ) -> None:
+        if show_header is not None:
+            self.table.options.show_header = show_header
+        if show_auto is not None:
+            self.table.options.show_auto = show_auto
 
-    def _get_rows_tokens(self):
+    def _get_rows_tokens(self) -> [FormattedText([])]:
         rows = super()._get_rows_tokens()
         new_rows = []
         if self.show_search and self.searched != "":
@@ -77,7 +77,7 @@ class TableSelectControl(BaseTableControl):
             new_rows = rows
         return new_rows
 
-    def _get_choice_tokens(self):
+    def _get_choice_tokens(self) -> FormattedText([]):
         tokens = super()._get_choice_tokens()
         if self.show_search and self.searched != "":
             tokens.append(("", "\n"))
@@ -87,7 +87,7 @@ class TableSelectControl(BaseTableControl):
             self.reset_selection()
         return tokens
 
-    def get_key_bindings(self):
+    def get_key_bindings(self) -> KeyBindings:
         self.key_bindings = KeyBindings()
 
         @self.key_bindings.add('up', filter=has_focus(self))
@@ -113,21 +113,23 @@ class TableSelectControl(BaseTableControl):
             if char not in '0123456789':
                 return
             char = int(char)
-            delta = 1 if self.has_auto else 0
+            delta = 1 if self.table.options.show_auto else 0
 
             def sort(row):
                 try:
-                    return str(row[char-delta])
+                    index = char - delta
+                    column = self.table.headers[index].column
+                    return str(row[column])
                 except Exception:
                     return ""
 
-            if self.has_auto and char == 0:
+            if self.table.options.show_auto and char == 0:
                 pass
             else:
                 if (char - delta) in self.sort_methods.keys():
-                    self.table["rows"] = sorted(self.table["rows"], key=self.sort_methods[char - delta])
+                    self.table.rows = sorted(self.table.rows, key=self.sort_methods[char - delta])
                 else:
-                    self.table["rows"] = sorted(self.table["rows"], key=sort)
+                    self.table.rows = sorted(self.table.rows, key=sort)
 
         @self.key_bindings.add('escape', filter=has_focus(self) & to_filter(self.show_search))
         def _(event):
@@ -150,7 +152,7 @@ class TableSelectControl(BaseTableControl):
     def add_sort_method(self, index: int, fn):
         self.sort_methods[index] = fn
 
-    def get_response(self):
+    def get_response(self) -> tuple:
         if self.cancelled:
             return (-1, "Operation cancelled")
         else:

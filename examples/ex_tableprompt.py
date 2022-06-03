@@ -17,26 +17,14 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import data as example
 from libtable import TablePrompt
 
 
 def main():
-    data = {
-        "headers": [
-            {"name": "IID", "width": 5, "rightalign": True},
-            {"name": "TITLE"},
-            {"name": "DESC", "weight": 2}
-        ],
-        "rows": [
-            ("1", "<b>AAA</b> <i>BBB</i>", "Description of AAA", "e"),
-            ("2", "BBB dsqd qsd qd qdq q dqs", "<aaa bg='red'>Description of BBB</aaa>"),
-            ("3", 23, False),
-            ("5", "DDD", "<aaa bg='blue'>Description of DDD</aaa>"),
-            ("15", "EEE"),
-        ]
-    }
+    data = example.get_data()
 
-    table = TablePrompt(data, show_auto=False, index_column="IID")
+    table = TablePrompt(data, show_auto=False, index_column="iid")
     (index, item) = table.show()
     if index == -1:
         print("ERROR")

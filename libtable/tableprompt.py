@@ -15,7 +15,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+from ._baseclass import BaseTableData
 from .tablecontrol import TableControl
+
 from prompt_toolkit import prompt
 from prompt_toolkit import print_formatted_text
 from prompt_toolkit.formatted_text import FormattedText
@@ -24,11 +26,11 @@ from prompt_toolkit.validation import Validator
 
 class TablePrompt:
     def __init__(self,
-                 table,
-                 show_header=True,
-                 show_auto=False,
-                 index_column="auto",
-                 prompt_style="yellow"
+                 table: BaseTableData,
+                 show_header: bool = None,
+                 show_auto: bool = None,
+                 index_column: str = "auto",
+                 prompt_style: str = "ansiyellow"
                  ):
         self.table = table
         self.index_column = index_column
@@ -47,19 +49,19 @@ class TablePrompt:
     def __get_valid_values(self):
         self.valid_values = []
         if self.index_column == "auto":
-            if not self.table["options"]["show_auto"]:
+            if not self.table.options.show_auto:
                 self.valid = False
                 self.error_message = "ERROR: index_column is auto but no auto column"
             else:
-                self.valid_values = list(range(1, len(self.table["rows"]) + 1))
+                self.valid_values = list(range(1, len(self.table.rows) + 1))
         else:
-            headers = list(map(lambda x: x["name"], self.table["headers"]))
+            headers = list(map(lambda x: x.column, self.table.headers))
             if self.index_column not in headers:
                 self.valid = False
                 self.error_message = "ERROR: index_column is not a valid column"
             else:
-                self.column_index = headers.index(self.index_column)
-                self.valid_values = list(map(lambda x: x[self.column_index] if len(list(x)) > self.column_index else None, self.table["rows"]))
+                # self.column_index = headers.index(self.index_column)
+                self.valid_values = list(map(lambda x: x[self.index_column] if self.index_column in x.keys() else None, self.table.rows))
                 self.valid_values = list(filter(None, self.valid_values))
                 self.valid_values = list(filter(lambda x: str(x).isnumeric(), self.valid_values))
                 if len(self.valid_values) == 0:
@@ -84,6 +86,6 @@ class TablePrompt:
         except KeyboardInterrupt:
             return (-1, "Operation cancelled")
         if self.index_column == "auto":
-            return (index - 1, self.table["rows"][index - 1])
+            return (index - 1, self.table.rows[index - 1])
         else:
-            return (index, list(filter(lambda x: int(x[self.column_index]) == index, self.table["rows"]))[0])
+            return (index, list(filter(lambda x: int(x[self.index_column]) == index, self.table.rows))[0])
