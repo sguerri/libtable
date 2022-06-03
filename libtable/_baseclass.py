@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import json
+# import json
 
 
 class BaseTableHeader:
@@ -32,6 +32,7 @@ class BaseTableHeader:
         self.weight = weight
         self.rightalign = rightalign
 
+    """
     def to_json(self) -> json:
         return {
             "column": self.column,
@@ -43,6 +44,7 @@ class BaseTableHeader:
 
     def __str__(self) -> str:
         return json.dumps(self.to_json(), indent=4)
+    """
 
 
 class BaseTableOptions():
@@ -63,6 +65,7 @@ class BaseTableOptions():
         self.header_style = header_style
         self.selection_style = selection_style
 
+    """
     def to_json(self) -> json:
         return {
             "span": self.span,
@@ -76,17 +79,14 @@ class BaseTableOptions():
 
     def __str__(self) -> str:
         return json.dumps(self.to_json(), indent=4)
+    """
 
 
 class BaseTableData:
-    def __init__(self,
-                 headers: [BaseTableHeader] = [],
-                 rows: [dict] = [],
-                 options: BaseTableOptions = BaseTableOptions()
-                 ) -> None:
-        self.headers: [BaseTableHeader] = headers
-        self.rows = rows
-        self.options = options
+    def __init__(self) -> None:
+        self.headers = []
+        self.rows = []
+        self.options = BaseTableOptions()
 
     def add_header(self,
                    column: str,
@@ -97,12 +97,14 @@ class BaseTableData:
                    ):
         self.headers.append(BaseTableHeader(column, name, width=width, weight=weight, rightalign=rightalign))
 
+    """
     def to_json(self) -> json:
         return {
-            "headers": list(map(lambda header: header.to_json(), self.headers)),
+            "headers": json.loads(list(map(lambda header: header.to_json(), self.headers))),
             "rows": json.loads(self.rows),
             "options": self.options.to_json()
         }
 
     def __str__(self) -> str:
         return json.dumps(self.to_json(), indent=4)
+    """
