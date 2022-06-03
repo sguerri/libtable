@@ -1,8 +1,8 @@
-from libtable import BaseTableData
+from libtable import TableData
 
 
 def get_data():
-    data = BaseTableData()
+    data = TableData()
     data.add_header("iid", "IID", width=5, rightalign=True)
     data.add_header("title", "TITLE")
     data.add_header("desc", "DESC", weight=2)
